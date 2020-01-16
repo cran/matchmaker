@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>Introduction to matchmaker</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to matchmaker</h1>
+
+
+
+<p>The goal of {matchmaker} is to provide dictionary-based cleaning for R users in a simple and intuitive manner built on the <a href="https://forcats.tidyverse.org">{forcats}</a> package. Some of the features of this package include:</p>
+<ul>
+<li>preservation of factor orders</li>
+<li>ability to specify explicit and implicit missing values</li>
+<li>option to replace by fuzzy matching (regular expressions, anchored by default)</li>
+<li>optional variable selection by fuzzy matching</li>
+</ul>
+<div id="installation" class="section level2">
+<h2>Installation</h2>
+<p>You can install {matchmaker} from CRAN:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">&quot;matchmaker&quot;</span>)</a></code></pre></div>
+</div>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>The matchmaker package has two user-facing functions that perform dictionary-based cleaning:</p>
+<ul>
+<li><code>match_vec()</code> will translate the values in a single vector</li>
+<li><code>match_df()</code> will translate values in all specified columns of a data frame</li>
+</ul>
+<p>Each of these functions have four manditory options:</p>
+<ul>
+<li><code>x</code>: your data. This will be a vector or data frame depending on the function.</li>
+<li><code>dictionary</code>: This is a data frame with at least two columns specifying keys and values to modify</li>
+<li><code>from</code>: a character or number specifying which column contains the keys</li>
+<li><code>to</code>: a character or number specifying which column contains the values</li>
+</ul>
+<p>Mostly, users will be working with <code>match_df()</code> to transform values across specific columns. A typical workflow would be to:</p>
+<ol style="list-style-type: decimal">
+<li>construct your dictionary in a spreadsheet program based on your data</li>
+<li>read in your data and dictionary to data frames in R</li>
+<li>match!</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(<span class="st">&quot;matchmaker&quot;</span>)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co"># Read in data set</span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">dat &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">matchmaker_example</span>(<span class="st">&quot;coded-data.csv&quot;</span>),</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">  <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">)</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">dat<span class="op">$</span>date &lt;-<span class="st"> </span><span class="kw">as.Date</span>(dat<span class="op">$</span>date)</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"><span class="co"># Read in dictionary</span></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">dict &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">matchmaker_example</span>(<span class="st">&quot;spelling-dictionary.csv&quot;</span>),</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">  <span class="dt">stringsAsFactors =</span> <span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12">)</a></code></pre></div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>This is the top of our data set, generated for example purposes</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">date</th>
+<th align="left">readmission</th>
+<th align="right">treated</th>
+<th align="left">facility</th>
+<th align="right">age_group</th>
+<th align="left">lab_result_01</th>
+<th align="left">lab_result_02</th>
+<th align="left">lab_result_03</th>
+<th align="left">has_symptoms</th>
+<th align="left">followup</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ef267c</td>
+<td align="left">2019-07-08</td>
+<td align="left">NA</td>
+<td align="right">0</td>
+<td align="left">C</td>
+<td align="right">10</td>
+<td align="left">unk</td>
+<td align="left">high</td>
+<td align="left">inc</td>
+<td align="left">NA</td>
+<td align="left">u</td>
+</tr>
+<tr class="even">
+<td align="left">e80a37</td>
+<td align="left">2019-07-07</td>
+<td align="left">y</td>
+<td align="right">0</td>
+<td align="left">3</td>
+<td align="right">10</td>
+<td align="left">inc</td>
+<td align="left">unk</td>
+<td align="left">norm</td>
+<td align="left">y</td>
+<td align="left">oui</td>
+</tr>
+<tr class="odd">
+<td align="left">b72883</td>
+<td align="left">2019-07-07</td>
+<td align="left">y</td>
+<td align="right">1</td>
+<td align="left">8</td>
+<td align="right">30</td>
+<td align="left">inc</td>
+<td align="left">norm</td>
+<td align="left">inc</td>
+<td align="left"></td>
+<td align="left">oui</td>
+</tr>
+<tr class="even">
+<td align="left">c9ee86</td>
+<td align="left">2019-07-09</td>
+<td align="left">n</td>
+<td align="right">1</td>
+<td align="left">4</td>
+<td align="right">40</td>
+<td align="left">inc</td>
+<td align="left">inc</td>
+<td align="left">unk</td>
+<td align="left">y</td>
+<td align="left">oui</td>
+</tr>
+<tr class="odd">
+<td align="left">40bc7a</td>
+<td align="left">2019-07-12</td>
+<td align="left">n</td>
+<td align="right">1</td>
+<td align="left">6</td>
+<td align="right">0</td>
+<td align="left">norm</td>
+<td align="left">unk</td>
+<td align="left">norm</td>
+<td align="left">NA</td>
+<td align="left">n</td>
+</tr>
+<tr class="even">
+<td align="left">46566e</td>
+<td align="left">2019-07-14</td>
+<td align="left">y</td>
+<td align="right">NA</td>
+<td align="left">B</td>
+<td align="right">50</td>
+<td align="left">unk</td>
+<td align="left">unk</td>
+<td align="left">inc</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="dictionary" class="section level3">
+<h3>Dictionary</h3>
+<p>The dictionary looks like this:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">options</th>
+<th align="left">values</th>
+<th align="left">grp</th>
+<th align="right">orders</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">Yes</td>
+<td align="left">readmission</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">n</td>
+<td align="left">No</td>
+<td align="left">readmission</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">u</td>
+<td align="left">Unknown</td>
+<td align="left">readmission</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">.missing</td>
+<td align="left">Missing</td>
+<td align="left">readmission</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">Yes</td>
+<td align="left">treated</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">No</td>
+<td align="left">treated</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">.missing</td>
+<td align="left">Missing</td>
+<td align="left">treated</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">1</td>
+<td align="left">Facility 1</td>
+<td align="left">facility</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">2</td>
+<td align="left">Facility 2</td>
+<td align="left">facility</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">3</td>
+<td align="left">Facility 3</td>
+<td align="left">facility</td>
+<td align="right">3</td>
+</tr>
+<tr class="odd">
+<td align="left">4</td>
+<td align="left">Facility 4</td>
+<td align="left">facility</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">5</td>
+<td align="left">Facility 5</td>
+<td align="left">facility</td>
+<td align="right">5</td>
+</tr>
+<tr class="odd">
+<td align="left">6</td>
+<td align="left">Facility 6</td>
+<td align="left">facility</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">7</td>
+<td align="left">Facility 7</td>
+<td align="left">facility</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">8</td>
+<td align="left">Facility 8</td>
+<td align="left">facility</td>
+<td align="right">8</td>
+</tr>
+<tr class="even">
+<td align="left">9</td>
+<td align="left">Facility 9</td>
+<td align="left">facility</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">10</td>
+<td align="left">Facility 10</td>
+<td align="left">facility</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">.default</td>
+<td align="left">Unknown</td>
+<td align="left">facility</td>
+<td align="right">11</td>
+</tr>
+<tr class="odd">
+<td align="left">0</td>
+<td align="left">0-9</td>
+<td align="left">age_group</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">10</td>
+<td align="left">10-19</td>
+<td align="left">age_group</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">20</td>
+<td align="left">20-29</td>
+<td align="left">age_group</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">30</td>
+<td align="left">30-39</td>
+<td align="left">age_group</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">40</td>
+<td align="left">40-49</td>
+<td align="left">age_group</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">50</td>
+<td align="left">50+</td>
+<td align="left">age_group</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">high</td>
+<td align="left">High</td>
+<td align="left">.regex ^lab_result_</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">norm</td>
+<td align="left">Normal</td>
+<td align="left">.regex ^lab_result_</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">inc</td>
+<td align="left">Inconclusive</td>
+<td align="left">.regex ^lab_result_</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">yes</td>
+<td align="left">.global</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">n</td>
+<td align="left">no</td>
+<td align="left">.global</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">u</td>
+<td align="left">unknown</td>
+<td align="left">.global</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">unk</td>
+<td align="left">unknown</td>
+<td align="left">.global</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">oui</td>
+<td align="left">yes</td>
+<td align="left">.global</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">.missing</td>
+<td align="left">missing</td>
+<td align="left">.global</td>
+<td align="right">Inf</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="matching" class="section level3">
+<h3>Matching</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Clean spelling based on dictionary -----------------------------</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">cleaned &lt;-<span class="st"> </span><span class="kw">match_df</span>(dat,</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="dt">dictionary =</span> dict,</a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">  <span class="dt">from =</span> <span class="st">&quot;options&quot;</span>,</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">  <span class="dt">to =</span> <span class="st">&quot;values&quot;</span>,</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">  <span class="dt">by =</span> <span class="st">&quot;grp&quot;</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">)</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">head</span>(cleaned)</a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt;       id       date readmission treated    facility age_group lab_result_01</span></a>
+<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt; 1 ef267c 2019-07-08     Missing     Yes     Unknown     10-19       unknown</span></a>
+<a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co">#&gt; 2 e80a37 2019-07-07         Yes     Yes Facility  3     10-19  Inconclusive</span></a>
+<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="co">#&gt; 3 b72883 2019-07-07         Yes      No Facility  8     30-39  Inconclusive</span></a>
+<a class="sourceLine" id="cb3-13" data-line-number="13"><span class="co">#&gt; 4 c9ee86 2019-07-09          No      No Facility  4     40-49  Inconclusive</span></a>
+<a class="sourceLine" id="cb3-14" data-line-number="14"><span class="co">#&gt; 5 40bc7a 2019-07-12          No      No Facility  6       0-9        Normal</span></a>
+<a class="sourceLine" id="cb3-15" data-line-number="15"><span class="co">#&gt; 6 46566e 2019-07-14         Yes Missing     Unknown       50+       unknown</span></a>
+<a class="sourceLine" id="cb3-16" data-line-number="16"><span class="co">#&gt;   lab_result_02 lab_result_03 has_symptoms followup</span></a>
+<a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co">#&gt; 1          High  Inconclusive      missing  unknown</span></a>
+<a class="sourceLine" id="cb3-18" data-line-number="18"><span class="co">#&gt; 2       unknown        Normal          yes      yes</span></a>
+<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="co">#&gt; 3        Normal  Inconclusive      missing      yes</span></a>
+<a class="sourceLine" id="cb3-20" data-line-number="20"><span class="co">#&gt; 4  Inconclusive       unknown          yes      yes</span></a>
+<a class="sourceLine" id="cb3-21" data-line-number="21"><span class="co">#&gt; 5       unknown        Normal      missing       no</span></a>
+<a class="sourceLine" id="cb3-22" data-line-number="22"><span class="co">#&gt; 6       unknown  Inconclusive      missing  missing</span></a></code></pre></div>
+</div>
+</div>
+<div id="special-keywords" class="section level1">
+<h1>Special Keywords</h1>
+<p>In addition to strict one-to-one matching, there are a few reserved keywords that will help with correcting data. There are reserved keywords for the ‘from’, ‘to’, and ‘by’ columns in the dictionary.</p>
+<div id="keys-from-column" class="section level2">
+<h2>Keys (<code>from</code> column)</h2>
+<p>The <code>from</code> column of the dictionary will contain the keys that you want to match in your current data set. These are expected to match exactly with the exception of three reserved keywords that start with a full stop:</p>
+<ul>
+<li><code>.regex [pattern]</code>: will replace anything matching [pattern]. This is executed before any other replacements are made. The [pattern] should be an unquoted, valid, PERL-flavored regular expression. Any whitespace padding the regular expression is discarded.</li>
+<li><code>.missing</code>: replaces any blank cells or <code>NA</code> values.</li>
+<li><code>.default</code>: replaces ALL values that are not defined in the dictionary and are not missing.</li>
+</ul>
+<blockquote>
+<p>* Any <code>NA</code> values in the keys will be interpreted as “NA” because it’s a common mistake to import the value “NA” to missing in R. If you intend for <code>NA</code> to indicate missing data, replace it with: <code>dictionary[[1]][is.na(dictionary[[1]])] &lt;- &quot;.missing&quot;</code></p>
+</blockquote>
+</div>
+<div id="values-to-column" class="section level2">
+<h2>Values (<code>to</code> column)</h2>
+<p>The values will replace their respective keys exactly as they are presented with one exception. There is currently one recognised keyword that can be placed in the to column of your dictionary:</p>
+<ul>
+<li><code>.na</code>: Replace keys with missing data. When used in combination with the <code>.missing</code> keyword (in column 1), it can allow you to differentiate between explicit and implicit missing data.</li>
+</ul>
+</div>
+<div id="keyword-demonstration" class="section level2">
+<h2>Keyword demonstration</h2>
+<p>For example, let’s say you have the following data set of people asked if they like ice cream:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">who &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Anakin&quot;</span>, <span class="st">&quot;Darth&quot;</span>, <span class="st">&quot;R2-D2&quot;</span>, <span class="st">&quot;Leia&quot;</span>, <span class="st">&quot;C-3PO&quot;</span>, <span class="st">&quot;Rey&quot;</span>, <span class="st">&quot;Obi-Wan&quot;</span>, <span class="st">&quot;Luke&quot;</span>, <span class="st">&quot;Chewy&quot;</span>, <span class="st">&quot;Owen&quot;</span>, <span class="st">&quot;Lando&quot;</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">icecream &lt;-<span class="st"> </span><span class="kw">c</span>(letters[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>], <span class="st">&quot;NO&quot;</span>, <span class="st">&quot;N&quot;</span>, <span class="st">&quot;yes&quot;</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">&quot;n&quot;</span>, <span class="st">&quot;n&quot;</span>, <span class="ot">NA</span>, <span class="st">&quot;&quot;</span>)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="kw">names</span>(icecream) &lt;-<span class="st"> </span>who</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">icecream</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt;  Anakin   Darth   R2-D2    Leia   C-3PO     Rey Obi-Wan    Luke   Chewy    Owen </span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt;     &quot;a&quot;     &quot;b&quot;     &quot;c&quot;    &quot;NO&quot;     &quot;N&quot;   &quot;yes&quot;     &quot;Y&quot;     &quot;n&quot;     &quot;n&quot;      NA </span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt;   Lando </span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt;      &quot;&quot;</span></a></code></pre></div>
+<div id="missing-data-and-default-values" class="section level3">
+<h3>Missing data and default values</h3>
+<p>You could contstruct a dictionary that has a 1:1 relationship between the keys that looks like this:</p>
+<table>
+<caption>my_dict1</caption>
+<thead>
+<tr class="header">
+<th align="left">keys</th>
+<th align="left">values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">yes</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">Y</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="odd">
+<td align="left">n</td>
+<td align="left">No</td>
+</tr>
+<tr class="even">
+<td align="left">N</td>
+<td align="left">No</td>
+</tr>
+<tr class="odd">
+<td align="left">NO</td>
+<td align="left">No</td>
+</tr>
+<tr class="even">
+<td align="left">.missing</td>
+<td align="left">.na</td>
+</tr>
+<tr class="odd">
+<td align="left">.default</td>
+<td align="left">(invalid)</td>
+</tr>
+</tbody>
+</table>
+<p>Once you read in the file (either via <code>read.csv()</code> or <code>readxl::read_excel()</code> if you use excel), you can use it as a dictionary. This dictionary will do three things:</p>
+<ol style="list-style-type: decimal">
+<li>convert iterations of yes/no into Yes and No</li>
+<li>convert blank or <code>NA</code> values to explicit missing data.</li>
+<li>convert all other values to “(invalid)”</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">match_vec</span>(icecream, <span class="dt">dictionary =</span> my_dict1, <span class="dt">from =</span> <span class="st">&quot;keys&quot;</span>, <span class="dt">to =</span> <span class="st">&quot;values&quot;</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="co">#&gt; Warning: 'a', 'b', 'c' were changed to the default value ('(invalid)')</span></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt;      Anakin       Darth       R2-D2        Leia       C-3PO         Rey </span></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt; &quot;(invalid)&quot; &quot;(invalid)&quot; &quot;(invalid)&quot;        &quot;No&quot;        &quot;No&quot;       &quot;Yes&quot; </span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt;     Obi-Wan        Luke       Chewy        Owen       Lando </span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt;       &quot;Yes&quot;        &quot;No&quot;        &quot;No&quot;          NA          NA</span></a></code></pre></div>
+</div>
+<div id="fuzzy-matching" class="section level3">
+<h3>Fuzzy matching</h3>
+<p>Now we have nice, predictable values, but let’s say Luke really didn’t like ice cream. If he responded “NOOOOOOO” instead of “n”, then the dictionary we specified would convert it to “(invalid)”:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">icecream[<span class="st">&quot;Luke&quot;</span>] &lt;-<span class="st"> &quot;NOOOOOOO&quot;</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">match_vec</span>(icecream, <span class="dt">dictionary =</span> my_dict1, <span class="dt">from =</span> <span class="st">&quot;keys&quot;</span>, <span class="dt">to =</span> <span class="st">&quot;values&quot;</span>)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; Warning: 'NOOOOOOO', 'a', 'b', 'c' were changed to the default value</span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; ('(invalid)')</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt;      Anakin       Darth       R2-D2        Leia       C-3PO         Rey </span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; &quot;(invalid)&quot; &quot;(invalid)&quot; &quot;(invalid)&quot;        &quot;No&quot;        &quot;No&quot;       &quot;Yes&quot; </span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">#&gt;     Obi-Wan        Luke       Chewy        Owen       Lando </span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt;       &quot;Yes&quot; &quot;(invalid)&quot;        &quot;No&quot;          NA          NA</span></a></code></pre></div>
+<p>We can fix this if we use pattern matching. Here we are selecting from any valid spelling of yes/no with trailing letters so that it capture’s Luke’s extreme objection to ice cream. To do this we add the <code>.regex</code> prefix (note the space after <code>.regex</code>):</p>
+<table>
+<caption>my_dict2</caption>
+<thead>
+<tr class="header">
+<th align="left">keys</th>
+<th align="left">values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">.regex ^[Yy][Ee]?[Ss]*$</td>
+<td align="left">Yes</td>
+</tr>
+<tr class="even">
+<td align="left">.regex ^[Nn][Oo]*$</td>
+<td align="left">No</td>
+</tr>
+<tr class="odd">
+<td align="left">.missing</td>
+<td align="left">.na</td>
+</tr>
+<tr class="even">
+<td align="left">.default</td>
+<td align="left">(invalid)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">match_vec</span>(icecream, <span class="dt">dictionary =</span> my_dict2, <span class="dt">from =</span> <span class="st">&quot;keys&quot;</span>, <span class="dt">to =</span> <span class="st">&quot;values&quot;</span>)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; Warning: 'a', 'b', 'c' were changed to the default value ('(invalid)')</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt;      Anakin       Darth       R2-D2        Leia       C-3PO         Rey </span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">#&gt; &quot;(invalid)&quot; &quot;(invalid)&quot; &quot;(invalid)&quot;        &quot;No&quot;        &quot;No&quot;       &quot;Yes&quot; </span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">#&gt;     Obi-Wan        Luke       Chewy        Owen       Lando </span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">#&gt;       &quot;Yes&quot;        &quot;No&quot;        &quot;No&quot;          NA          NA</span></a></code></pre></div>
+<p>The drawback to fuzzy matching is that it will convert things that match the pattern, so be very careful when constructing your keys.</p>
+</div>
+</div>
+<div id="working-with-data-frames" class="section level2">
+<h2>Working with Data Frames</h2>
+<p>When using the <code>match_df()</code> function, you would construct the dictionary same as you would above, with two extra columns that specify the column name in the data frame and the order the resulting values should be (if the column is a factor).</p>
+<p>As with <code>match_vec()</code>, all the same keywords apply, but now there are also two keywords for the columns:</p>
+<ul>
+<li><code>.regex [pattern]</code>: any column whose name is matched by [pattern]. The [pattern] should be an unquoted, valid, PERL-flavored regular expression. This will match any column that is named with a given pattern. This would commonly be used for recoding results from columns that all start with the same pattern: <code>^lab_result_</code> would match <code>lab_result_QTPCR</code>, <code>lab_result_WBC</code>, <code>lab_result_iron</code>.</li>
+<li><code>.global</code>: defines rules for any column that is a character or factor and any column named in the dictionary. If you want to apply a set of definitions to all valid columns in addition to specified columns, then you can include a <code>.global</code> group in the <code>by</code> column of your ‘dictionary’ data frame. This is useful for setting up a dictionary of common spelling errors. <em>NOTE: specific variable definitions will override global defintions.</em> For example: if you have a column for cardinal directions and a definiton for <code>N = North</code>, then the global variable <code>N = no</code> will not override that.</li>
+</ul>
+</div>
+<div id="matching-columns-with-.regex" class="section level2">
+<h2>Matching columns with <code>.regex</code></h2>
+<blockquote>
+<p>Before you use regex, you should be aware of three special symbols that will help anchor your words and prevent any unintended matching.</p>
+</blockquote>
+<ol style="list-style-type: decimal">
+<li>The carrot (<code>^</code>) <strong>should be placed at the beginning of a pattern</strong> to show that it’s the beginning of the word. For example, <code>lab</code> will match both <code>lab_result</code> and <code>granite_slab</code>, but <code>^lab</code> will only match <code>lab_result</code></li>
+<li>The dollar (<code>$</code>) <strong>should be placed at the end of a pattern</strong> to show that it’s the end of a word. For example, <code>date</code> will match both <code>admission_date</code> and <code>date_of_onset</code>, but <code>date$</code> will only match <code>admission_date$</code>.</li>
+<li>The dot (<code>.</code>) <strong>matches any character</strong>. Because it’s common in column names imported by R, it’s a good idea to wrap it in square brackets (<code>[.]</code>) to tell R that you actually mean a dot. For example, <code>^lab.r$</code> will match <code>lab.r</code>, <code>lab_r</code>, and <code>labor</code>, but <code>^lab[.]r$</code> will only match <code>lab.r</code>.</li>
+</ol>
+<p>The best strategy is to use at least one anchor to prevent it greedily selecting columns to match.</p>
+<p>In our example from the top, there are three columns that all start with <code>lab_result_</code>, so we use the <code>.regex ^lab_result</code> keyword:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># view the lab_result columns:</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">print</span>(labs &lt;-<span class="st"> </span><span class="kw">grep</span>(<span class="st">&quot;^lab_result_&quot;</span>, <span class="kw">names</span>(dat), <span class="dt">value =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#&gt; [1] &quot;lab_result_01&quot; &quot;lab_result_02&quot; &quot;lab_result_03&quot;</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="kw">str</span>(dat[labs])</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">#&gt; 'data.frame':    50 obs. of  3 variables:</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt;  $ lab_result_01: chr  &quot;unk&quot; &quot;inc&quot; &quot;inc&quot; &quot;inc&quot; ...</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt;  $ lab_result_02: chr  &quot;high&quot; &quot;unk&quot; &quot;norm&quot; &quot;inc&quot; ...</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt;  $ lab_result_03: chr  &quot;inc&quot; &quot;norm&quot; &quot;inc&quot; &quot;unk&quot; ...</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co"># show the lab_result part of the dictionary:</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="kw">print</span>(dict[<span class="kw">grep</span>(<span class="st">&quot;^[.]regex&quot;</span>, dict<span class="op">$</span>grp), ])</a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="co">#&gt;    options       values                 grp orders</span></a>
+<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">#&gt; 25    high         High .regex ^lab_result_      1</span></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="co">#&gt; 26    norm       Normal .regex ^lab_result_      2</span></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">#&gt; 27     inc Inconclusive .regex ^lab_result_      3</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co"># clean the data and compare the result</span></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16">cleaned &lt;-<span class="st"> </span><span class="kw">match_df</span>(dat, dict, </a>
+<a class="sourceLine" id="cb8-17" data-line-number="17">  <span class="dt">from =</span> <span class="st">&quot;options&quot;</span>, </a>
+<a class="sourceLine" id="cb8-18" data-line-number="18">  <span class="dt">to =</span> <span class="st">&quot;values&quot;</span>, </a>
+<a class="sourceLine" id="cb8-19" data-line-number="19">  <span class="dt">by =</span> <span class="st">&quot;grp&quot;</span>, </a>
+<a class="sourceLine" id="cb8-20" data-line-number="20">  <span class="dt">order =</span> <span class="st">&quot;orders&quot;</span></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21">) </a>
+<a class="sourceLine" id="cb8-22" data-line-number="22"><span class="kw">str</span>(cleaned[labs])</a>
+<a class="sourceLine" id="cb8-23" data-line-number="23"><span class="co">#&gt; 'data.frame':    50 obs. of  3 variables:</span></a>
+<a class="sourceLine" id="cb8-24" data-line-number="24"><span class="co">#&gt;  $ lab_result_01: chr  &quot;unknown&quot; &quot;Inconclusive&quot; &quot;Inconclusive&quot; &quot;Inconclusive&quot; ...</span></a>
+<a class="sourceLine" id="cb8-25" data-line-number="25"><span class="co">#&gt;  $ lab_result_02: chr  &quot;High&quot; &quot;unknown&quot; &quot;Normal&quot; &quot;Inconclusive&quot; ...</span></a>
+<a class="sourceLine" id="cb8-26" data-line-number="26"><span class="co">#&gt;  $ lab_result_03: chr  &quot;Inconclusive&quot; &quot;Normal&quot; &quot;Inconclusive&quot; &quot;unknown&quot; ...</span></a></code></pre></div>
+</div>
+<div id="using-.global-to-clean-up-all-characterfactor-columns" class="section level2">
+<h2>Using <code>.global</code> to clean up all character/factor columns</h2>
+<p>We’ve actually seen the <code>.global</code> keyword in use already. Let’s take one more look at the results from above:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># show the lab_result part of the dictionary:</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw">print</span>(dict[<span class="kw">grep</span>(<span class="st">&quot;^[.]regex&quot;</span>, dict<span class="op">$</span>grp), ])</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;    options       values                 grp orders</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; 25    high         High .regex ^lab_result_      1</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt; 26    norm       Normal .regex ^lab_result_      2</span></a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt; 27     inc Inconclusive .regex ^lab_result_      3</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co"># show the original data</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="kw">str</span>(dat[labs])</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="co">#&gt; 'data.frame':    50 obs. of  3 variables:</span></a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="co">#&gt;  $ lab_result_01: chr  &quot;unk&quot; &quot;inc&quot; &quot;inc&quot; &quot;inc&quot; ...</span></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="co">#&gt;  $ lab_result_02: chr  &quot;high&quot; &quot;unk&quot; &quot;norm&quot; &quot;inc&quot; ...</span></a>
+<a class="sourceLine" id="cb9-12" data-line-number="12"><span class="co">#&gt;  $ lab_result_03: chr  &quot;inc&quot; &quot;norm&quot; &quot;inc&quot; &quot;unk&quot; ...</span></a>
+<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="co"># show the modified data</span></a>
+<a class="sourceLine" id="cb9-14" data-line-number="14"><span class="kw">str</span>(cleaned[labs])</a>
+<a class="sourceLine" id="cb9-15" data-line-number="15"><span class="co">#&gt; 'data.frame':    50 obs. of  3 variables:</span></a>
+<a class="sourceLine" id="cb9-16" data-line-number="16"><span class="co">#&gt;  $ lab_result_01: chr  &quot;unknown&quot; &quot;Inconclusive&quot; &quot;Inconclusive&quot; &quot;Inconclusive&quot; ...</span></a>
+<a class="sourceLine" id="cb9-17" data-line-number="17"><span class="co">#&gt;  $ lab_result_02: chr  &quot;High&quot; &quot;unknown&quot; &quot;Normal&quot; &quot;Inconclusive&quot; ...</span></a>
+<a class="sourceLine" id="cb9-18" data-line-number="18"><span class="co">#&gt;  $ lab_result_03: chr  &quot;Inconclusive&quot; &quot;Normal&quot; &quot;Inconclusive&quot; &quot;unknown&quot; ...</span></a></code></pre></div>
+<p>Notice above how there are rules for “high”, “norm”, and “inc”, but not for “unk”, which was turned into “unknown”? This is because of the global keywords:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">print</span>(dict[<span class="kw">grep</span>(<span class="st">&quot;^[.](regex|global)&quot;</span>, dict<span class="op">$</span>grp), ])</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt;     options       values                 grp orders</span></a>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt; 25     high         High .regex ^lab_result_      1</span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt; 26     norm       Normal .regex ^lab_result_      2</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt; 27      inc Inconclusive .regex ^lab_result_      3</span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="co">#&gt; 28        y          yes             .global    Inf</span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">#&gt; 29        n           no             .global    Inf</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="co">#&gt; 30        u      unknown             .global    Inf</span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="co">#&gt; 31      unk      unknown             .global    Inf</span></a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"><span class="co">#&gt; 32      oui          yes             .global    Inf</span></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="co">#&gt; 33 .missing      missing             .global    Inf</span></a></code></pre></div>
+<p>The “unk” keyword was defined in our global dictionary and has been used to translate “unk” to “unknown”.</p>
+<p>Of course, be very careful with this one.</p>
+</div>
+<div id="warnings" class="section level2">
+<h2>Warnings</h2>
+<p>Internally, the <code>match_vec()</code> function can be quite noisy with warnings for various reasons. Thus, by default, the <code>match_df()</code> function will keep these quiet, but you can have them printed to your console if you use the <code>warn = TRUE</code> option:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">cleaned &lt;-<span class="st"> </span><span class="kw">match_df</span>(dat, dict, </a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">from =</span> <span class="st">&quot;options&quot;</span>, </a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">  <span class="dt">to =</span> <span class="st">&quot;values&quot;</span>, </a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">  <span class="dt">by =</span> <span class="st">&quot;grp&quot;</span>, </a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">  <span class="dt">order =</span> <span class="st">&quot;orders&quot;</span>,</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">  <span class="dt">warn =</span> <span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">) </a>
+<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt; ── Warnings were found in the following columns ──</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="co">#&gt; ● age_group</span></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12"><span class="co">#&gt;   1. ⚠ None of the variables in `age_group` were found in the global</span></a>
+<a class="sourceLine" id="cb11-13" data-line-number="13"><span class="co">#&gt;     dictionary. Did you use the correct dictionary?</span></a>
+<a class="sourceLine" id="cb11-14" data-line-number="14"><span class="co">#&gt; ● facility</span></a>
+<a class="sourceLine" id="cb11-15" data-line-number="15"><span class="co">#&gt;   1. ⚠ None of the variables in `facility` were found in the global</span></a>
+<a class="sourceLine" id="cb11-16" data-line-number="16"><span class="co">#&gt;     dictionary. Did you use the correct dictionary?</span></a>
+<a class="sourceLine" id="cb11-17" data-line-number="17"><span class="co">#&gt;   2. ⚠ 'A', 'B', 'C' were changed to the default value ('Unknown')</span></a>
+<a class="sourceLine" id="cb11-18" data-line-number="18"><span class="co">#&gt; ● readmission</span></a>
+<a class="sourceLine" id="cb11-19" data-line-number="19"><span class="co">#&gt;   1. ⚠ None of the variables in `readmission` were found in the global</span></a>
+<a class="sourceLine" id="cb11-20" data-line-number="20"><span class="co">#&gt;     dictionary. Did you use the correct dictionary?</span></a>
+<a class="sourceLine" id="cb11-21" data-line-number="21"><span class="co">#&gt; ● treated</span></a>
+<a class="sourceLine" id="cb11-22" data-line-number="22"><span class="co">#&gt;   1. ⚠ None of the variables in `treated` were found in the global</span></a>
+<a class="sourceLine" id="cb11-23" data-line-number="23"><span class="co">#&gt;     dictionary. Did you use the correct dictionary?</span></a>
+<a class="sourceLine" id="cb11-24" data-line-number="24"><span class="co">#&gt; ● id</span></a>
+<a class="sourceLine" id="cb11-25" data-line-number="25"><span class="co">#&gt;   1. ⚠ None of the variables in `id` were found in `dict`. Did you use the</span></a>
+<a class="sourceLine" id="cb11-26" data-line-number="26"><span class="co">#&gt;     correct dictionary?</span></a></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
