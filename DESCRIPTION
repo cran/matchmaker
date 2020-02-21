@@ -1,6 +1,6 @@
 Package: matchmaker
 Title: Flexible Dictionary-Based Cleaning
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: c(
     person(given = "Zhian N.",
            family = "Kamvar",
@@ -30,10 +30,10 @@ RoxygenNote: 7.0.2
 Imports: rlang, forcats, cli
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2020-01-13 14:53:01 UTC; zkamvar
+Packaged: 2020-02-21 18:12:33 UTC; zhian
 Author: Zhian N. Kamvar [aut, cre] (<https://orcid.org/0000-0003-1458-7108>),
   Thibaut Jombart [ctb],
   Patrick Barks [ctb]
 Maintainer: Zhian N. Kamvar <zkamvar@gmail.com>
 Repository: CRAN
-Date/Publication: 2020-01-16 11:10:02 UTC
+Date/Publication: 2020-02-21 19:00:02 UTC

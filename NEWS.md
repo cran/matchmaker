@@ -1,3 +1,7 @@
+# matchmaker 0.1.1
+
+* update tests to accomodate R version 4.0.0. See issue #9 for details
+
 # matchmaker 0.1.0
 
 * first official version of matchmaker
